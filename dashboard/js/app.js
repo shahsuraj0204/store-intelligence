@@ -210,54 +210,25 @@ function setupCameraTabs() {
     });
 }
 
-// Refresh the img tag src or video src for processed video stream
+// Refresh the img tag src for processed video stream
 function updateCameraStream() {
     const selectedStore = storeSelector.value;
-    const streamContainer = document.querySelector(".stream-container");
-    if (!streamContainer) return;
+    const streamImg = document.getElementById("cctv-stream");
+    const videoEl = document.getElementById("cctv-video");
     
-    const isGithubPages = window.location.hostname.includes("github.io");
-    const camNum = activeCameraId.split("_")[1] || "3";
+    // Clean up video element if it exists from previous attempts
+    if (videoEl) {
+        videoEl.remove();
+    }
     
-    if (isGithubPages) {
-        // On GitHub Pages, swap the broken img tag for a looping html5 video player
-        let videoEl = document.getElementById("cctv-video");
-        let imgEl = document.getElementById("cctv-stream");
-        
-        if (imgEl) {
-            imgEl.style.display = "none";
-        }
-        
-        if (!videoEl) {
-            videoEl = document.createElement("video");
-            videoEl.id = "cctv-video";
-            videoEl.autoplay = true;
-            videoEl.loop = true;
-            videoEl.muted = true;
-            videoEl.setAttribute("playsinline", "");
-            videoEl.style.width = "100%";
-            videoEl.style.height = "100%";
-            videoEl.style.objectFit = "cover";
-            streamContainer.appendChild(videoEl);
-        }
-        
-        videoEl.style.display = "block";
-        videoEl.src = `cam${camNum}_loop.mp4`;
-        videoEl.load();
-        videoEl.play().catch(e => console.warn("Video auto-play blocked:", e));
-    } else {
-        // On Localhost, use the FastAPI MJPEG stream frame overlay
-        let videoEl = document.getElementById("cctv-video");
-        let imgEl = document.getElementById("cctv-stream");
-        
-        if (videoEl) {
-            videoEl.style.display = "none";
-            videoEl.pause();
-        }
-        
-        if (imgEl) {
-            imgEl.style.display = "block";
-            imgEl.src = `${API_BASE}/stores/${selectedStore}/cameras/${activeCameraId}/stream`;
+    if (streamImg) {
+        streamImg.style.display = "block";
+        if (window.location.hostname.includes("github.io")) {
+            // Load the animated GIF loop
+            const camNum = activeCameraId.split("_")[1] || "3";
+            streamImg.src = `cam${camNum}_loop.gif`;
+        } else {
+            streamImg.src = `${API_BASE}/stores/${selectedStore}/cameras/${activeCameraId}/stream`;
         }
     }
 }

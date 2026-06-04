@@ -13,17 +13,19 @@ CCTV Footage/
 CCTV Footage-20260529T160731Z-3-00144614ea/
 *.zip
 *.mp4
-!dashboard/cam1_loop.mp4
-!dashboard/cam2_loop.mp4
-!dashboard/cam3_loop.mp4
-!dashboard/cam4_loop.mp4
-!dashboard/cam5_loop.mp4
+*.gif
+!dashboard/cam1_loop.gif
+!dashboard/cam2_loop.gif
+!dashboard/cam3_loop.gif
+!dashboard/cam4_loop.gif
+!dashboard/cam5_loop.gif
 *.png
 !cam1_frame.png
 !cam2_frame.png
 !cam3_frame.png
 !cam4_frame.png
 !cam5_frame.png
+!dashboard_preview.png
 
 # Models
 *.pt

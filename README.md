@@ -1,33 +1,40 @@
 # Store Intelligence System (Apex Retail)
 
-This repository contains the AI-powered Store Intelligence System built for the Purplle Tech Challenge 2026. It combines a computer vision tracking pipeline, real-time analytics REST & WebSocket API, and an interactive live dashboard.
+This repository contains the AI-powered Store Intelligence System built for the **Purplle Tech Challenge 2026**. It combines a real-time computer vision tracking pipeline, a FastAPI REST & WebSocket analytics backend, and a premium interactive dashboard interface.
+
+👉 **[Live Interactive Dashboard Demo (GitHub Pages)](https://shahsuraj0204.github.io/store-intelligence/)**
 
 ---
 
-## Quick Setup (5 Commands)
+## 🖥️ Dashboard Preview
+![Store Intelligence Dashboard Preview](dashboard_preview.png)
 
-Process from cloning to running in exactly 5 steps:
+---
+
+## 🚀 Quick Setup (5 Commands)
+
+Process from cloning to running locally in exactly 5 steps:
 
 ```bash
 # 1. Clone the repository and navigate inside
-git clone <repo_url> && cd store-intelligence
+git clone https://github.com/shahsuraj0204/store-intelligence.git && cd store-intelligence
 
-# 2. Start the FastAPI backend and live dashboard containers
-docker compose up -d --build
+# 2. Start the FastAPI backend server
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 
 # 3. Initialize Python dependencies for local testing
 pip install -r requirements.txt
 
 # 4. Run the computer vision detection & tracking pipeline against the CCTV footage
-./pipeline/run.sh
+python pipeline/detect.py --video_dir "CCTV Footage" --store_id "ST1008" --output "events_output.jsonl"
 
 # 5. Run the automated test suite
-pytest tests/ -v
+python -m pytest tests/ -v
 ```
 
 ---
 
-## Services & Ports
+## 📡 Services & Ports
 
 *   **Live Dashboard Web Surface**: Available at [http://localhost:8000/dashboard](http://localhost:8000/dashboard) (or redirects from [http://localhost:8000](http://localhost:8000)).
 *   **FastAPI REST endpoints**: Exposed at `http://localhost:8000/docs` (Swagger UI).
@@ -35,16 +42,29 @@ pytest tests/ -v
 
 ---
 
-## Ingesting & Simulating Data
+## 📹 Ingesting & Simulating Data
 
 ### Running the Batch Pipeline
 To process the video clips and automatically ingest the behavioral events to the REST API, execute:
 ```bash
-./pipeline/run.sh
+# Run detection tracking
+python pipeline/detect.py --video_dir "CCTV Footage" --store_id "ST1008" --output "events_output.jsonl"
+
+# Emit events to local server
+python pipeline/emit.py --input "events_output.jsonl" --host "http://127.0.0.1:8000"
 ```
 
 ### Running Simulated Live Demo
-If CUDA is unavailable on your machine, running YOLOv8 tracking on CPU may take several minutes. To view the dashboard's live streaming, charts, and anomaly alerts instantly:
-1. Open the Live Dashboard at `http://localhost:8000`
+To view the dashboard's live streaming, charts, and anomaly alerts instantly without running the CV processing:
+1. Open the Live Dashboard at `http://localhost:8000` (or your public GitHub Pages link!)
 2. Click the **"Run Simulation"** button in the top right corner.
-3. This triggers a mock real-time replay event stream directly into the API, showing WebSockets and visual cards updating live!
+3. The dashboard will automatically clear out the database and start a fresh, live event stream directly into the API, showing WebSockets, KPI cards, heatmaps, visitor lists, and chart widgets updating live frame-by-frame!
+
+---
+
+## 🛠️ Key Features Built
+*   **Edge CV Tracking (YOLOv8 + ByteTrack)**: Human bounding-box detection mapped to physical store coordinate zones.
+*   **Multi-Camera Spatial Re-ID**: Tracking customer pathways across camera overlaps and separating staff traffic from shoppers automatically.
+*   **Live Metrics API**: Dwell times, conversion funnels, checkout queue depths, and queue abandonment rates computed dynamically.
+*   **Dynamic Operations & Security Alerts**: Critical warnings for restricted area office breaches and cashier queue spikes.
+*   **AI Layout Optimizer**: Correlating Point-of-Sale (POS) basket transitions with physical aisle flow to recommend layout modifications.
