@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex Retail - Store Intelligence Dashboard</title>
+    <!-- Modern Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for Interactive Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="css/style.css?v=2.0">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <i class="fa-solid fa-crosshairs brand-icon"></i>
+                <div class="brand-text">
+                    <h1>APEX RETAIL</h1>
+                    <span>Store Intelligence</span>
+                </div>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active"><i class="fa-solid fa-chart-line"></i> Live Monitor</a>
+                <a href="#funnel-section" class="menu-item"><i class="fa-solid fa-filter"></i> Funnel Analysis</a>
+                <a href="#heatmap-section" class="menu-item"><i class="fa-solid fa-fire"></i> Store Heatmap</a>
+                <a href="#journey-section" class="menu-item"><i class="fa-solid fa-route"></i> Shopper Journeys</a>
+                <a href="#anomalies-section" class="menu-item"><i class="fa-solid fa-triangle-exclamation"></i> Anomalies</a>
+                <a href="#copilot-section" class="menu-item"><i class="fa-solid fa-robot"></i> AI Copilot</a>
+                <a href="#" id="deck-menu-item" class="menu-item"><i class="fa-solid fa-person-chalkboard"></i> Project Pitch Deck</a>
+            </nav>
+            <div class="sidebar-audio" style="margin-top: auto; margin-bottom: 16px;">
+                <button id="audio-toggle-btn" class="btn btn-secondary" style="width: 100%; justify-content: center; gap: 8px; font-size: 13.5px; padding: 10px; border-radius: 10px;">
+                    <i class="fa-solid fa-volume-xmark" id="audio-icon" style="transition: transform 0.2s ease;"></i>
+                    <span id="audio-text">Voice Copilot Off</span>
+                </button>
+            </div>
+            <div class="sidebar-status">
+                <div class="status-indicator online"></div>
+                <span>Server: Connected</span>
+            </div>
+        </aside>
+
+        <!-- Main Dashboard Surface -->
+        <main class="main-content">
+            <!-- Header bar -->
+            <header class="header">
+                <div class="header-title">
+                    <h2>Live Intelligence Desk</h2>
+                    <p class="subtitle">Real-time computer vision & sales transaction correlation stream</p>
+                </div>
+                <div class="header-actions">
+                    <div class="control-group">
+                        <label for="store-selector"><i class="fa-solid fa-store"></i> Active Store:</label>
+                        <select id="store-selector" class="custom-select">
+                            <option value="ST1008">ST1008 - Brigade Road, Bangalore</option>
+                            <option value="STORE_BLR_002">STORE_BLR_002 - Indiranagar, Bangalore</option>
+                        </select>
+                    </div>
+                    <button id="refresh-btn" class="btn btn-secondary"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+                    <button id="sim-btn" class="btn btn-primary"><i class="fa-solid fa-play"></i> Run Simulation</button>
+            </header>
+
+            <!-- Project Presentation Slide Deck -->
+            <section class="dashboard-card glass-card hidden" id="presentation-section" style="margin-top: 10px;">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-person-chalkboard"></i> Project Pitch & Architecture Deck</h3>
+                    <span class="badge">Purplle Tech Challenge 2026</span>
+                </div>
+                <div class="card-body presentation-deck-body">
+                    <!-- Slides Container -->
+                    <div class="slides-container">
+                        <!-- Slide 1: Intro -->
+                        <div class="slide active" data-slide="1">
+                            <div class="slide-content">
+                                <span class="slide-subtitle">Purplle Tech Challenge 2026</span>
+                                <h2 class="slide-title">APEX RETAIL</h2>
+                                <p class="slide-tagline">AI Store Intelligence & Re-ID Shopper Journey Analytics</p>
+                                <div class="slide-bullets" style="margin-top:20px;">
+                                    <div class="bullet-item"><i class="fa-solid fa-circle-check"></i> Real-time Computer Vision customer tracking.</div>
+                                    <div class="bullet-item"><i class="fa-solid fa-circle-check"></i> Dynamic Re-ID cross-camera spatial timelines.</div>
+                                    <div class="bullet-item"><i class="fa-solid fa-circle-check"></i> POS basket mining layout optimization.</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Slide 2: Problem Statement -->
+                        <div class="slide" data-slide="2">
+                            <div class="slide-content">
+                                <span class="slide-subtitle">The Challenge</span>
+                                <h2 class="slide-title">Retail Visibility Bottlenecks</h2>
+                                <p class="slide-tagline">Traditional stores suffer from blindspots in shopper behavior.</p>
+                                <div class="slide-bullets" style="margin-top:20px;">
+                                    <div class="bullet-item"><i class="fa-solid fa-triangle-exclamation" style="color:var(--accent-orange);"></i> <strong>Blind Dwell Times:</strong> High traffic shelves but unknown drop-off factors.</div>
+                                    <div class="bullet-item"><i class="fa-solid fa-triangle-exclamation" style="color:var(--accent-orange);"></i> <strong>Checkout Abandonment:</strong> Long queues build up without predictive staff allocation.</div>
+                                    <div class="bullet-item"><i class="fa-solid fa-triangle-exclamation" style="color:var(--accent-orange);"></i> <strong>Static Store Layouts:</strong> No correlation between item purchase affinity and physical traffic.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 3: Architecture -->
+                        <div class="slide" data-slide="3">
+                            <div class="slide-content">
+                                <span class="slide-subtitle">Technical Stack</span>
+                                <h2 class="slide-title">Edge-to-Cloud System Flow</h2>
+                                <p class="slide-tagline">A real-time, lightweight, database-backed processing pipeline.</p>
+                                <div class="slide-bullets" style="margin-top:20px;">
+                                    <div class="bullet-item"><i class="fa-solid fa-microchip" style="color:var(--primary-color);"></i> <strong>CV Pipeline:</strong> YOLOv8 + ByteTrack running frame-skipped inferences on CPU.</div>
+                                    <div class="bullet-item"><i class="fa-solid fa-database" style="color:var(--primary-color);"></i> <strong>SQLite & FastAPI:</strong> Dynamic database storage storing trajectories and POS tables.</div>
+                                    <div class="bullet-item"><i class="fa-solid fa-wifi" style="color:var(--primary-color);"></i> <strong>WebSockets:</strong> Real-time asynchronous event broadcasts straight to frontend.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 4: Journey Re-ID -->
+                        <div class="slide" data-slide="4">
+                            <div class="slide-content">
+                                <span class="slide-subtitle">Core Innovation 1</span>
+                                <h2 class="slide-title">Spatial Re-ID Journey Timeline</h2>
+                                <p class="slide-tagline">Tracing exact multi-camera transitions for individual customer sessions.</p>
+                                <div class="slide-bullets" style="margin-top:20px;">
+                                    <div class="bullet-item"><i class="fa-solid fa-route" style="color:var(--accent-blue);"></i> Reconstructs paths from entrance, shelf zones, queues, and checkout.</div>
+                                    <div class="bullet-item"><i class="fa-solid fa-route" style="color:var(--accent-blue);"></i> Generates detailed telemetry: visit duration, dwell time, and speed.</div>
+                                    <div class="bullet-item"><i class="fa-solid fa-route" style="color:var(--accent-blue);"></i> Classifies shopper profiles and segmenting employee traffic automatically.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 5: Layout Optimization -->
+                        <div class="slide" data-slide="5">
+                            <div class="slide-content">
+                                <span class="slide-subtitle">Core Innovation 2</span>
+                                <h2 class="slide-title">POS Basket Correlation A/B</h2>
+                                <p class="slide-tagline">Mining POS baskets and mapping them to physical customer paths.</p>
+                                <div class="slide-bullets" style="margin-top:20px;">
+                                    <div class="bullet-item"><i class="fa-solid fa-chart-simple" style="color:var(--accent-green);"></i> <strong>POS Affinity:</strong> Association rules showing buy-together category strengths.</div>
+                                    <div class="bullet-item"><i class="fa-solid fa-chart-simple" style="color:var(--accent-green);"></i> <strong>CV Flow:</strong> Tracks physical transition rate between shelves.</div>
+                                    <div class="bullet-item"><i class="fa-solid fa-chart-simple" style="color:var(--accent-green);"></i> <strong>PEI Score:</strong> Identifies layout bottlenecks (high affinity + low flow).</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 6: Voice Copilot -->
+                        <div class="slide" data-slide="6">
+                            <div class="slide-content">
+                                <span class="slide-subtitle">Core Innovation 3</span>
+                                <h2 class="slide-title">Interactive Voice & Sound Copilot</h2>
+                                <p class="slide-tagline">An eyes-free, voice-assistant desk for busy store managers.</p>
+                                <div class="slide-bullets" style="margin-top:20px;">
+                                    <div class="bullet-item"><i class="fa-solid fa-volume-high" style="color:var(--primary-color);"></i> <strong>Web Audio Synthesizer:</strong> Clean sound design generated in-browser.</div>
+                                    <div class="bullet-item"><i class="fa-solid fa-volume-high" style="color:var(--primary-color);"></i> <strong>TTS Announcements:</strong> Dynamic voice narration of alerts, queues, and insights.</div>
+                                    <div class="bullet-item"><i class="fa-solid fa-volume-high" style="color:var(--primary-color);"></i> <strong>Auditory Alarms:</strong> Critical sound flags for restricted area intrusions.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Controls -->
+                    <div class="presentation-controls" style="margin-top:30px;">
+                        <button id="prev-slide" class="btn btn-secondary" style="gap: 6px;"><i class="fa-solid fa-chevron-left"></i> Previous</button>
+                        <span class="slide-number">Slide 1 of 6</span>
+                        <button id="next-slide" class="btn btn-primary" style="gap: 6px;">Next <i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Key Metrics Overview Grid -->
+            <section class="kpi-grid">
+                <!-- KPI 1: Unique Visitors -->
+                <div class="kpi-card glass-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Unique Visitors</span>
+                        <div class="kpi-icon-wrapper blue"><i class="fa-solid fa-users"></i></div>
+                    </div>
+                    <div class="kpi-value-container">
+                        <span id="stat-visitors" class="kpi-value">0</span>
+                        <span class="kpi-trend positive"><i class="fa-solid fa-arrow-trend-up"></i> Active Today</span>
+                    </div>
+                    <p class="kpi-desc">Total unique visitor sessions (excluding staff members)</p>
+                </div>
+
+                <!-- KPI 2: Conversion Rate -->
+                <div class="kpi-card glass-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Conversion Rate</span>
+                        <div class="kpi-icon-wrapper green"><i class="fa-solid fa-basket-shopping"></i></div>
+                    </div>
+                    <div class="kpi-value-container">
+                        <span id="stat-conversion" class="kpi-value">0.00%</span>
+                        <span class="kpi-trend positive"><i class="fa-solid fa-circle-check"></i> Target: 25.0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div id="stat-conversion-bar" class="progress-bar green-bar" style="width: 0%"></div>
+                    </div>
+                    <p class="kpi-desc">Percentage of visitors who completed a POS transaction</p>
+                </div>
+
+                <!-- KPI 3: Billing Queue Depth -->
+                <div class="kpi-card glass-card" id="queue-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Billing Queue Depth</span>
+                        <div class="kpi-icon-wrapper orange" id="queue-icon-wrap"><i class="fa-solid fa-user-clock"></i></div>
+                    </div>
+                    <div class="kpi-value-container">
+                        <span id="stat-queue" class="kpi-value">0</span>
+                        <span id="stat-queue-status" class="kpi-trend neutral">Normal</span>
+                    </div>
+                    <p class="kpi-desc">Current number of customers waiting at the checkout counter</p>
+                </div>
+
+                <!-- KPI 4: Abandonment Rate -->
+                <div class="kpi-card glass-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Queue Abandonment</span>
+                        <div class="kpi-icon-wrapper red"><i class="fa-solid fa-user-minus"></i></div>
+                    </div>
+                    <div class="kpi-value-container">
+                        <span id="stat-abandonment" class="kpi-value">0.00%</span>
+                        <span class="kpi-trend negative"><i class="fa-solid fa-arrow-trend-down"></i> Lower is better</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div id="stat-abandonment-bar" class="progress-bar red-bar" style="width: 0%"></div>
+                    </div>
+                    <p class="kpi-desc">Customers who left the checkout counter without paying</p>
+                </div>
+            </section>
+
+            <!-- Main Data Visualizations Grid -->
+            <div class="vis-grid">
+                <!-- Left Visualizations Column -->
+                <div class="vis-left">
+                    <!-- Live CCTV Camera Monitor -->
+                    <div class="dashboard-card glass-card">
+                        <div class="card-header flex-col">
+                            <div class="card-header-main">
+                                <h3><i class="fa-solid fa-video"></i> Live CCTV Pipeline Monitor</h3>
+                                <span class="badge">YOLOv8 + ByteTrack</span>
+                            </div>
+                            <div class="camera-tabs">
+                                <button class="cam-tab active" data-camera="CAM_3">CAM 3 (Entry)</button>
+                                <button class="cam-tab" data-camera="CAM_1">CAM 1 (Skincare)</button>
+                                <button class="cam-tab" data-camera="CAM_2">CAM 2 (Makeup)</button>
+                                <button class="cam-tab" data-camera="CAM_5">CAM 5 (Billing)</button>
+                                <button class="cam-tab" data-camera="CAM_4">CAM 4 (Office)</button>
+                            </div>
+                        </div>
+                        <div class="card-body video-stream-body">
+                            <div class="stream-container">
+                                <img id="cctv-stream" src="/stores/ST1008/cameras/CAM_3/stream" alt="CCTV Stream Overlay">
+                                <div class="stream-overlay-badge"><i class="fa-solid fa-circle"></i> PROCESSING FEED</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Funnel Analysis Card -->
+                    <div class="dashboard-card glass-card" id="funnel-section">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-filter"></i> Customer Conversion Funnel</h3>
+                            <span class="badge">Session Level</span>
+                        </div>
+                        <div class="card-body chart-body">
+                            <canvas id="funnelChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Heatmap / Space Occupancy Grid Card -->
+                    <div class="dashboard-card glass-card" id="heatmap-section">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-fire"></i> Product Zone Heatmap</h3>
+                            <span id="heatmap-confidence" class="badge green">High Confidence</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="heatmap-layout-wrapper">
+                                <!-- Interactive SVG/CSS layout of the store -->
+                                <div class="store-grid">
+                                    <div class="grid-zone skincare" id="zone-SKINCARE">
+                                        <span class="zone-label">Skincare Zone</span>
+                                        <span class="zone-visits">Visits: -</span>
+                                        <span class="zone-dwell">Avg Dwell: -</span>
+                                    </div>
+                                    <div class="grid-zone makeup" id="zone-MAKEUP">
+                                        <span class="zone-label">Makeup Aisle</span>
+                                        <span class="zone-visits">Visits: -</span>
+                                        <span class="zone-dwell">Avg Dwell: -</span>
+                                    </div>
+                                    <div class="grid-zone haircare" id="zone-HAIRCARE">
+                                        <span class="zone-label">Haircare Shelf</span>
+                                        <span class="zone-visits">Visits: -</span>
+                                        <span class="zone-dwell">Avg Dwell: -</span>
+                                    </div>
+                                    <div class="grid-zone fragrance" id="zone-FRAGRANCE">
+                                        <span class="zone-label">Fragrance Shelf</span>
+                                        <span class="zone-visits">Visits: -</span>
+                                        <span class="zone-dwell">Avg Dwell: -</span>
+                                    </div>
+                                    <div class="grid-zone billing-area" id="zone-BILLING">
+                                        <span class="zone-label">Billing Counter</span>
+                                        <span class="zone-visits">Checkout Queue</span>
+                                        <span class="zone-dwell">Avg Dwell: -</span>
+                                    </div>
+                                    <div class="grid-zone backoffice-area" id="zone-BACK_OFFICE">
+                                        <span class="zone-label"><i class="fa-solid fa-lock"></i> Back Office</span>
+                                        <span class="zone-visits">Restricted Area</span>
+                                        <span class="zone-dwell">No Customers</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shopper Journey Path Visualizer -->
+                    <div class="dashboard-card glass-card" id="journey-section">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-route"></i> Shopper Journey Re-ID Tracker</h3>
+                            <span class="badge">Cross-Camera Sequences</span>
+                        </div>
+                        <div class="card-body">
+                            <p class="section-hint-text">Select a visitor below to view their reconstructed path across store cameras.</p>
+                            <div class="journey-container">
+                                <div class="visitor-list-pane" id="visitor-list-container">
+                                    <div class="empty-feed-state">Loading visitors...</div>
+                                </div>
+                                <div class="journey-details-pane" id="journey-detail-container">
+                                    <div class="empty-feed-state">
+                                        <i class="fa-solid fa-route"></i>
+                                        <p>Select a visitor from the left to visualize their path sequence.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Layout Placement Optimizer Card -->
+                    <div class="dashboard-card glass-card" id="optimizer-section">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-layer-group"></i> Layout Placement Optimizer</h3>
+                            <span class="badge">POS Basket vs Physical Flow</span>
+                        </div>
+                        <div class="card-body">
+                            <p class="section-hint-text">A/B correlations between shopper purchase affinities (POS CSV) and physical camera transitions.</p>
+                            <div class="optimizer-feed" id="optimizer-list" style="display:flex; flex-direction:column; gap:16px;">
+                                <div class="empty-feed-state">
+                                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                                    <p>Correlating baskets with path heatmaps...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Notifications & Streams Column -->
+                <div class="vis-right">
+                    <!-- AI Operations Copilot -->
+                    <div class="dashboard-card glass-card" id="copilot-section">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-robot"></i> AI Operations Copilot</h3>
+                            <span class="badge green">Real-Time Recommendations</span>
+                        </div>
+                        <div class="card-body copilot-body scrollable-feed" id="copilot-feed">
+                            <div class="empty-feed-state">
+                                <i class="fa-solid fa-circle-notch fa-spin"></i>
+                                <p>Analyzing store KPIs and generating suggestions...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Anomalies Desk -->
+                    <div class="dashboard-card glass-card" id="anomalies-section">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-triangle-exclamation"></i> Security & Operations Alerts</h3>
+                            <span class="alert-count-badge" id="anomaly-badge">0 Active</span>
+                        </div>
+                        <div class="card-body alerts-body scrollable-feed" id="anomalies-feed">
+                            <div class="empty-feed-state">
+                                <i class="fa-regular fa-circle-check"></i>
+                                <p>No anomalies detected. Store operations running smoothly.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Event Streaming Ticker -->
+                    <div class="dashboard-card glass-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-bolt"></i> Real-time Pipeline Feed</h3>
+                            <span class="feed-status-badge"><span class="pulse-dot"></span> Live events</span>
+                        </div>
+                        <div class="card-body feed-body scrollable-feed" id="events-feed">
+                            <div class="empty-feed-state">
+                                <i class="fa-solid fa-circle-nodes"></i>
+                                <p>Waiting for pipeline events from CCTV camera stream...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Live Simulation Control Modal / Status -->
+    <div id="sim-control-panel" class="simulation-control-panel glass-card hidden">
+        <div class="sim-header">
+            <h4><i class="fa-solid fa-circle-play"></i> Replaying Store Footage Events</h4>
+            <button id="sim-close" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="sim-body">
+            <div class="sim-progress-info">
+                <span id="sim-time">Time: 12:15:00</span>
+                <span id="sim-event-count">Events Sent: 0</span>
+            </div>
+            <div class="sim-progress-bar-container">
+                <div id="sim-progress-bar" class="sim-progress-bar" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js?v=2.0"></script>
+</body>
+</html>

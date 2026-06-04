@@ -1,0 +1,96 @@
+{
+  "stores": [
+    {
+      "store_id": "ST1008",
+      "store_name": "Brigade Road, Bangalore",
+      "open_hours": {
+        "open": "10:00:00",
+        "close": "22:00:00"
+      },
+      "cameras": [
+        {
+          "camera_id": "CAM_1",
+          "description": "Main Floor Skincare & Checkout Angle",
+          "coverage_zones": [
+            { "zone_id": "SKINCARE", "polygon": [[0, 0], [1200, 0], [1200, 1080], [0, 1080]] },
+            { "zone_id": "BILLING", "polygon": [[1200, 0], [1920, 0], [1920, 1080], [1200, 1080]] }
+          ]
+        },
+        {
+          "camera_id": "CAM_2",
+          "description": "Main Floor Makeup Aisle",
+          "coverage_zones": [
+            { "zone_id": "MAKEUP", "polygon": [[0, 0], [1920, 0], [1920, 1080], [0, 1080]] }
+          ]
+        },
+        {
+          "camera_id": "CAM_3",
+          "description": "Store Entrance / Exit Threshold",
+          "coverage_zones": [
+            { "zone_id": "ENTRY_ZONE", "polygon": [[0, 400], [1920, 400], [1920, 1080], [0, 1080]] }
+          ]
+        },
+        {
+          "camera_id": "CAM_4",
+          "description": "Restricted Back Office / Storage Area",
+          "coverage_zones": [
+            { "zone_id": "BACK_OFFICE", "polygon": [[0, 0], [1920, 0], [1920, 1080], [0, 1080]] }
+          ]
+        },
+        {
+          "camera_id": "CAM_5",
+          "description": "Close Up Billing / Cashier Area",
+          "coverage_zones": [
+            { "zone_id": "BILLING", "polygon": [[0, 0], [1920, 0], [1920, 1080], [0, 1080]] }
+          ]
+        }
+      ]
+    },
+    {
+      "store_id": "STORE_BLR_002",
+      "store_name": "Indiranagar, Bangalore",
+      "open_hours": {
+        "open": "10:00:00",
+        "close": "22:00:00"
+      },
+      "cameras": [
+        {
+          "camera_id": "CAM_1",
+          "description": "Main Floor Skincare & Checkout Angle",
+          "coverage_zones": [
+            { "zone_id": "SKINCARE", "polygon": [[0, 0], [1200, 0], [1200, 1080], [0, 1080]] },
+            { "zone_id": "BILLING", "polygon": [[1200, 0], [1920, 0], [1920, 1080], [1200, 1080]] }
+          ]
+        },
+        {
+          "camera_id": "CAM_2",
+          "description": "Main Floor Makeup Aisle",
+          "coverage_zones": [
+            { "zone_id": "MAKEUP", "polygon": [[0, 0], [1920, 0], [1920, 1080], [0, 1080]] }
+          ]
+        },
+        {
+          "camera_id": "CAM_3",
+          "description": "Store Entrance / Exit Threshold",
+          "coverage_zones": [
+            { "zone_id": "ENTRY_ZONE", "polygon": [[0, 400], [1920, 400], [1920, 1080], [0, 1080]] }
+          ]
+        },
+        {
+          "camera_id": "CAM_4",
+          "description": "Restricted Back Office / Storage Area",
+          "coverage_zones": [
+            { "zone_id": "BACK_OFFICE", "polygon": [[0, 0], [1920, 0], [1920, 1080], [0, 1080]] }
+          ]
+        },
+        {
+          "camera_id": "CAM_5",
+          "description": "Close Up Billing / Cashier Area",
+          "coverage_zones": [
+            { "zone_id": "BILLING", "polygon": [[0, 0], [1920, 0], [1920, 1080], [0, 1080]] }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: store-intelligence-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_PATH=store_intelligence.db
+    volumes:
+      - .:/workspace
+    restart: always

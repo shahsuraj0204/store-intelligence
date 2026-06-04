@@ -1,0 +1,28 @@
+# Python files
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+*.db
+*.log
+
+# Large media files (CCTV Footage & archives)
+CCTV Footage/
+CCTV Footage-20260529T160731Z-3-00144614ea/
+*.zip
+*.mp4
+*.png
+
+# Models
+*.pt
+*.onnx
+
+# Environment & local credentials
+.env
+.env.local
+.venv/
+env/
+venv/
+ENV/
