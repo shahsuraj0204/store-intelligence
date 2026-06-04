@@ -320,6 +320,11 @@ function updateStatusIndicator(connected) {
 async function loadDashboardData() {
     const storeId = storeSelector.value;
     
+    if (window.location.hostname.includes("github.io")) {
+        loadMockDashboardData(storeId);
+        return;
+    }
+    
     try {
         // 1. Fetch Metrics
         const metricsRes = await fetch(`${API_BASE}/stores/${storeId}/metrics`);
@@ -579,10 +584,15 @@ async function startFootageSimulation() {
     speakText("Starting live store event simulation stream.");
 
     // Clear database before starting simulation to start metrics from scratch
-    try {
-        await fetch(`${API_BASE}/events/clear`, { method: "POST" });
-    } catch (e) {
-        console.warn("Failed to clear DB at simulation start:", e);
+    if (window.location.hostname.includes("github.io")) {
+        localEvents = [];
+        loadMockDashboardData(storeSelector.value);
+    } else {
+        try {
+            await fetch(`${API_BASE}/events/clear`, { method: "POST" });
+        } catch (e) {
+            console.warn("Failed to clear DB at simulation start:", e);
+        }
     }
 
     // Defined sequence of store events to represent raw CV mapping outputs
@@ -647,6 +657,23 @@ async function startFootageSimulation() {
              store_id: selectedStore,
              event_id: `${simEvents[simulationStep].event_id}-${runId}`
          };
+         
+         // If running on Github Pages, mock the ingest client-side in-memory
+         if (window.location.hostname.includes("github.io")) {
+             localEvents.push(event);
+             addEventToFeed(event);
+             eventsIngestedCount++;
+             simEventCountText.textContent = `Events Sent: ${eventsIngestedCount}`;
+             simTimeText.textContent = `Time: ${formatTimestamp(event.timestamp)}`;
+             
+             // Progress
+             const pct = (simulationStep / simEvents.length) * 100;
+             simProgressBar.style.width = `${pct}%`;
+             
+             loadDashboardData();
+             simulationStep++;
+             return;
+         }
          
          // Post event to /events/ingest
          try {
@@ -1038,4 +1065,213 @@ function initAutodemo() {
             }
         }, 5000);
     }, 2000);
+}
+
+// ==========================================
+// Client-Side Mock Analytics Engine (For GitHub Pages Deployment)
+// ==========================================
+let localEvents = [];
+
+function loadMockDashboardData(storeId) {
+    // 1. Filter events for current store and exclude staff
+    const storeEvents = localEvents.filter(e => e.store_id === storeId);
+    const nonStaffEvents = storeEvents.filter(e => !e.is_staff);
+    
+    // 2. Compute Unique Visitors
+    const uniqueVisitorsSet = new Set(nonStaffEvents.map(e => e.visitor_id));
+    const uniqueVisitors = uniqueVisitorsSet.size;
+    
+    // 3. Compute Funnel
+    const entryCount = uniqueVisitors;
+    
+    const zoneVisitors = new Set(
+        nonStaffEvents
+            .filter(e => e.zone_id && !["BILLING", "ENTRY", "EXIT"].includes(e.zone_id))
+            .map(e => e.visitor_id)
+    );
+    const zoneVisitCount = zoneVisitors.size;
+    
+    const billingVisitors = new Set(
+        nonStaffEvents
+            .filter(e => e.zone_id === "BILLING" || e.event_type === "BILLING_QUEUE_JOIN")
+            .map(e => e.visitor_id)
+    );
+    const billingQueueCount = billingVisitors.size;
+    
+    // Converted shoppers: check if they exit store after joining billing queue
+    const checkoutExits = nonStaffEvents.filter(e => e.visitor_id === "VIS_801" && e.event_type === "EXIT");
+    const purchaseCount = checkoutExits.length;
+    
+    const funnelStages = [
+        { stage_name: "Entry", count: entryCount },
+        { stage_name: "Zone Visit", count: zoneVisitCount },
+        { stage_name: "Billing Queue", count: billingQueueCount },
+        { stage_name: "Purchase", count: purchaseCount }
+    ];
+    
+    // Update Funnel
+    updateFunnelUI({ funnel: funnelStages });
+    
+    // 4. Conversion Rate & Abandonment
+    const conversionRate = uniqueVisitors > 0 ? (purchaseCount / uniqueVisitors) * 100 : 0.0;
+    const abandonmentRate = billingQueueCount > 0 ? ((billingQueueCount - purchaseCount) / billingQueueCount) * 100 : 0.0;
+    
+    // 5. Queue Depth
+    const latestQueueJoin = nonStaffEvents
+        .filter(e => e.event_type === "BILLING_QUEUE_JOIN" && e.metadata && e.metadata.queue_depth !== undefined)
+        .pop();
+    const queueDepth = latestQueueJoin ? latestQueueJoin.metadata.queue_depth : 0;
+    
+    // Update KPIs
+    updateMetricsUI({
+        unique_visitors: uniqueVisitors,
+        conversion_rate: conversionRate,
+        queue_depth: queueDepth,
+        abandonment_rate: abandonmentRate
+    });
+    
+    // 6. Heatmap layout
+    const zones = ["SKINCARE", "MAKEUP", "HAIRCARE", "FRAGRANCE"];
+    const zoneData = {};
+    zones.forEach(z => { zoneData[z] = { visits: new Set(), totalDwell: 0, countDwell: 0 }; });
+    
+    nonStaffEvents.forEach(e => {
+        if (zones.includes(e.zone_id)) {
+            zoneData[e.zone_id].visits.add(e.visitor_id);
+            if (e.event_type === "ZONE_DWELL" && e.dwell_ms > 0) {
+                zoneData[e.zone_id].totalDwell += e.dwell_ms;
+                zoneData[e.zone_id].countDwell++;
+            }
+        }
+    });
+    
+    const heatmapList = [];
+    const visitsCountArray = zones.map(z => zoneData[z].visits.size);
+    const maxVisits = Math.max(...visitsCountArray) || 1;
+    
+    zones.forEach(z => {
+        const visits = zoneData[z].visits.size;
+        const avgDwell = zoneData[z].countDwell > 0 ? (zoneData[z].totalDwell / zoneData[z].countDwell) : 0;
+        const score = (visits / maxVisits) * 100;
+        heatmapList.push({
+            zone_id: z,
+            visit_frequency: visits,
+            avg_dwell_sec: avgDwell / 1000,
+            normalized_score: score
+        });
+    });
+    
+    updateHeatmapUI({
+        data_confidence: uniqueVisitors >= 3,
+        heatmap: heatmapList
+    });
+    
+    // 7. Dynamic Alerts Anomalies
+    const anomaliesList = [];
+    const officeBreach = nonStaffEvents.find(e => e.zone_id === "BACK_OFFICE");
+    if (officeBreach) {
+        anomaliesList.push({
+            anomaly_id: "anom_001",
+            anomaly_type: "UNAUTHORIZED_ENTRY",
+            severity: "CRITICAL",
+            timestamp: officeBreach.timestamp,
+            zone_id: "BACK_OFFICE",
+            description: `Visitor ${officeBreach.visitor_id} detected entering restricted Back Office area.`,
+            suggested_action: "Dispatch floor staff to secure restricted warehouse entrance."
+        });
+    }
+    
+    if (queueDepth >= 5) {
+        anomaliesList.push({
+            anomaly_id: "anom_002",
+            anomaly_type: "QUEUE_SPIKE",
+            severity: "WARN",
+            timestamp: new Date().toISOString(),
+            zone_id: "BILLING",
+            description: `Checkout queue spike detected. ${queueDepth} shoppers waiting.`,
+            suggested_action: "Open auxiliary register 2 immediately to reduce queue bottleneck."
+        });
+    }
+    
+    updateAnomaliesUI(anomaliesList);
+    
+    // 8. Visitor Journeys
+    const journeys = [];
+    uniqueVisitorsSet.forEach(vId => {
+        const vEvents = nonStaffEvents.filter(e => e.visitor_id === vId);
+        const path = [];
+        vEvents.forEach(e => {
+            let icon = "fa-circle-nodes";
+            let desc = "";
+            if (e.event_type === "ENTRY") { icon = "fa-right-to-bracket"; desc = "Entered Store"; }
+            else if (e.event_type === "EXIT") { icon = "fa-right-from-bracket"; desc = "Exited Store"; }
+            else if (e.event_type === "ZONE_ENTER") { icon = "fa-shoe-prints"; desc = `Entered Aisle: ${e.zone_id}`; }
+            else if (e.event_type === "ZONE_DWELL") { icon = "fa-clock"; desc = `Browsing products in ${e.zone_id}`; }
+            else if (e.event_type === "BILLING_QUEUE_JOIN") { icon = "fa-people-group"; desc = "Joined checkout queue"; }
+            
+            path.push({
+                icon: icon,
+                description: desc,
+                timestamp: e.timestamp,
+                camera_id: e.camera_id
+            });
+        });
+        
+        journeys.push({
+            visitor_id: vId,
+            is_staff: false,
+            start_time: vEvents[0] ? vEvents[0].timestamp : "",
+            path: path
+        });
+    });
+    
+    activeJourneys = journeys;
+    renderVisitorList(journeys);
+    
+    // 9. Static Layout Optimization
+    const optimizations = [
+        {
+            category_a: "skincare",
+            category_b: "makeup",
+            status: "Optimal placement",
+            status_color: "green",
+            purchase_affinity: 34,
+            physical_transition: 42,
+            pei: 0.81,
+            recommendation: "Skincare and makeup show high buy-together affinity and high physical traffic flow. Keep adjacent layout."
+        },
+        {
+            category_a: "haircare",
+            category_b: "fragrance",
+            status: "Layout Bottleneck",
+            status_color: "orange",
+            purchase_affinity: 28,
+            physical_transition: 8,
+            pei: 0.28,
+            recommendation: "High basket affinity but low physical transitions. Recommend placing impulse item display at haircare-fragrance aisle junction."
+        }
+    ];
+    renderLayoutOptimizations(optimizations);
+    
+    // 10. AI Insights Copilot
+    const insights = [];
+    if (queueDepth >= 5) {
+        insights.push({
+            title: "Open Checkout Counter 2",
+            priority: "CRITICAL",
+            description: `Checkout queue depth is currently ${queueDepth} shoppers. Wait time exceeds 6 minutes.`,
+            action: "Alert manager to allocate additional cashier staffing immediately.",
+            type: "alert"
+        });
+    }
+    if (uniqueVisitors > 0) {
+        insights.push({
+            title: "Skincare Browse Hotspot",
+            priority: "HIGH",
+            description: "Skincare aisle represents 45% of total store dwell time today.",
+            action: "Feature premium promo display at skincare counter.",
+            type: "opportunity"
+        });
+    }
+    renderAIInsights(insights);
 }
