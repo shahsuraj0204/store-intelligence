@@ -30,6 +30,10 @@ Tracks visits, dwell times, and occupancy across Skincare, Makeup, Haircare, Fra
 Reconstructs exact cross-camera sequence pathways for individual customer sessions to analyze conversion bottlenecks:
 ![Visitor Journey Re-ID](docs/screenshots/05_journey_tracker.png)
 
+### 6. Layout Placement Optimizer
+Correlates point-of-sale (POS) buy-together basket affinities with physical camera shopper transition rates to automatically calculate Placement Efficiency (PEI) and flag bottlenecks:
+![Layout Placement Optimizer](docs/screenshots/06_layout_optimizer.png)
+
 ## 🚀 Quick Setup (5 Commands)
 
 Process from cloning to running locally in exactly 5 steps:
