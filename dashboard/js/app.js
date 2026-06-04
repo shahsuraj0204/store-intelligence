@@ -165,6 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupWebSocket();
     loadDashboardData();
     setupCameraTabs();
+    updateCameraStream();
 
     // Event Listeners
     storeSelector.addEventListener("change", () => {
