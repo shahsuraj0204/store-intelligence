@@ -25,6 +25,7 @@ CCTV Footage-20260529T160731Z-3-00144614ea/
 !dashboard/cam4_loop.mp4
 !dashboard/cam5_loop.mp4
 *.png
+!docs/screenshots/*.png
 !cam1_frame.png
 !cam2_frame.png
 !cam3_frame.png

@@ -7,9 +7,28 @@ This repository contains the AI-powered Store Intelligence System built for the 
 ---
 
 ## 🖥️ Dashboard Preview
-![Store Intelligence Dashboard Preview](dashboard_preview.png)
 
----
+Below are screenshots of the interactive dashboard demonstrating key system capabilities:
+
+### 1. Live Intelligence Desk & Active CCTV Streams
+The live desk shows real-time computer vision bounding boxes and shopper Re-ID tracking overlays on the store footage:
+![Dashboard Live Monitor](docs/screenshots/01_dashboard_init.png)
+
+### 2. Conversion Funnel & Security Desk
+Shows live-updating sales conversion funnel charts, AI operations copilot recommendations, and real-time security alerts (e.g. restricted warehouse entry):
+![Funnel & Active Alerts](docs/screenshots/02_conversion_funnel.png)
+
+### 3. Simulated Live Event Ingestion
+Replaying live store footage events pushes WebSocket broadcasts, updating the KPI dashboard frame-by-frame:
+![Live Ingestion](docs/screenshots/03_dashboard_simulating.png)
+
+### 4. Interactive Product Zone Heatmaps
+Tracks visits, dwell times, and occupancy across Skincare, Makeup, Haircare, Fragrance, and Billing Zones:
+![Heatmap Layout](docs/screenshots/04_zone_heatmap.png)
+
+### 5. Shopper Journey Re-ID Tracker
+Reconstructs exact cross-camera sequence pathways for individual customer sessions to analyze conversion bottlenecks:
+![Visitor Journey Re-ID](docs/screenshots/05_journey_tracker.png)
 
 ## 🚀 Quick Setup (5 Commands)
 
