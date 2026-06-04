@@ -28,12 +28,13 @@ def generate_cv_loops():
     output_dir = "dashboard"
     
     # Target resolution for web files
-    width, height = 480, 270
+    width, height = 960, 540
     
     # Process CAM 1 to 5
     for i in range(1, 6):
         video_path = os.path.join(video_dir, f"CAM {i}.mp4")
         output_path = os.path.join(output_dir, f"cam{i}_loop.mp4")
+        temp_output_path = os.path.join(output_dir, f"temp_cam{i}.mp4")
         camera_id = f"CAM_{i}"
         
         if not os.path.exists(video_path):
@@ -59,12 +60,12 @@ def generate_cv_loops():
         if fps <= 0:
             fps = 25.0
             
-        # OpenCV VideoWriter for high compression
+        # OpenCV VideoWriter for high compression (temp file)
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+        out = cv2.VideoWriter(temp_output_path, fourcc, fps, (width, height))
         
-        # We process the first 120 frames (4-5 seconds of loop is perfect for small file sizes)
-        max_frames = 120
+        # We process the first 150 frames (6 seconds of loop is perfect for small file sizes)
+        max_frames = 150
         frame_idx = 0
         
         # Color definitions for visuals
@@ -134,7 +135,25 @@ def generate_cv_loops():
             
         cap.release()
         out.release()
-        print(f"Finished {camera_id} loop: saved {output_path} ({frame_idx} frames)")
+        
+        # Run ffmpeg to transcode temp_cam{i}.mp4 to H.264
+        import subprocess
+        cmd = [
+            "ffmpeg", "-y",
+            "-i", temp_output_path,
+            "-vcodec", "libx264",
+            "-pix_fmt", "yuv420p",
+            output_path
+        ]
+        try:
+            print(f"Transcoding {temp_output_path} to H.264 using ffmpeg...")
+            subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            # Remove temp file
+            if os.path.exists(temp_output_path):
+                os.remove(temp_output_path)
+            print(f"Finished {camera_id} loop: saved {output_path} ({frame_idx} frames)")
+        except subprocess.CalledProcessError as e:
+            print(f"ffmpeg error: {e.stderr.decode('utf-8', errors='ignore')}")
 
 if __name__ == "__main__":
     generate_cv_loops()

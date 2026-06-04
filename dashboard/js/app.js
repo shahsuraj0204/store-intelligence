@@ -215,19 +215,30 @@ function updateCameraStream() {
     const selectedStore = storeSelector.value;
     const streamImg = document.getElementById("cctv-stream");
     const videoEl = document.getElementById("cctv-video");
+    const camNum = activeCameraId.split("_")[1] || "3";
     
-    // Clean up video element if it exists from previous attempts
-    if (videoEl) {
-        videoEl.remove();
-    }
+    const isStaticMode = window.location.hostname.includes("github.io") || 
+                         window.location.protocol === "file:" || 
+                         window.location.search.includes("static=true");
     
-    if (streamImg) {
-        streamImg.style.display = "block";
-        if (window.location.hostname.includes("github.io")) {
-            // Load the animated GIF loop
-            const camNum = activeCameraId.split("_")[1] || "3";
-            streamImg.src = `cam${camNum}_loop.gif`;
-        } else {
+    if (isStaticMode) {
+        // GitHub Pages or static local file: Play HD MP4 loop
+        if (streamImg) streamImg.style.display = "none";
+        if (videoEl) {
+            videoEl.style.display = "block";
+            const targetSrc = `cam${camNum}_loop.mp4`;
+            // Avoid reload flash if same camera
+            if (!videoEl.src.includes(targetSrc)) {
+                videoEl.src = targetSrc;
+                videoEl.load();
+                videoEl.play().catch(e => console.warn("Auto-play blocked or failed:", e));
+            }
+        }
+    } else {
+        // Local with backend running: Stream dynamic multipart stream from FastAPI
+        if (videoEl) videoEl.style.display = "none";
+        if (streamImg) {
+            streamImg.style.display = "block";
             streamImg.src = `${API_BASE}/stores/${selectedStore}/cameras/${activeCameraId}/stream`;
         }
     }

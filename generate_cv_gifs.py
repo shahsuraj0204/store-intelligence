@@ -27,8 +27,8 @@ def generate_cv_gifs():
     video_dir = "CCTV Footage"
     output_dir = "dashboard"
     
-    # Resize dimension for lightweight GIFs (keeps download sizes tiny)
-    width, height = 360, 202
+    # Resize dimension for sharp, high-quality loops
+    width, height = 640, 360
     
     # Process cameras CAM 1 to 5
     for i in range(1, 6):
