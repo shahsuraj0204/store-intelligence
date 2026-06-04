@@ -184,7 +184,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     // Automatically start presentation slides if ?autodemo=true query param is set
     initAutodemo();
+    // Pre-load camera frames for zero-latency switching on GitHub Pages
+    preloadCameraFrames();
 });
+
+function preloadCameraFrames() {
+    if (window.location.hostname.includes("github.io")) {
+        for (let i = 1; i <= 5; i++) {
+            const img = new Image();
+            img.src = `../cam${i}_frame.png`;
+        }
+    }
+}
 
 // Setup Camera tab buttons click listeners
 function setupCameraTabs() {
@@ -203,7 +214,13 @@ function updateCameraStream() {
     const selectedStore = storeSelector.value;
     const streamImg = document.getElementById("cctv-stream");
     if (streamImg) {
-        streamImg.src = `${API_BASE}/stores/${selectedStore}/cameras/${activeCameraId}/stream`;
+        if (window.location.hostname.includes("github.io")) {
+            // Load the static camera frame PNGs from the repo root
+            const camNum = activeCameraId.split("_")[1] || "3";
+            streamImg.src = `../cam${camNum}_frame.png`;
+        } else {
+            streamImg.src = `${API_BASE}/stores/${selectedStore}/cameras/${activeCameraId}/stream`;
+        }
     }
 }
 
